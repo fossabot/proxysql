@@ -94,12 +94,26 @@ jobs:
     - name: Install MySQL operator
       run: |
         export KUBECONFIG="$(kind get kubeconfig-path)"
-        make mysql-install
+        make mysql-install || true
+        kubectl get pods --all-namespaces
+        kubectl describe -n kube-system deploy/kubedb-mysql
+        sleep 60
+        kubectl logs -n kube-system deploy/kubedb-mysql
+        echo "----------------"
+        kubectl get crd
+        kubectl get mysqlversion 5.7.25
 
     - name: Install Percona-XtraDB operator
       run: |
         export KUBECONFIG="$(kind get kubeconfig-path)"
-        make percona-xtradb-install
+        env REGISTRY=alittleprogramming PERCONA_XTRADB_TAG=fix-dbg_linux_amd64 make percona-xtradb-install || true
+        kubectl get pods --all-namespaces
+        kubectl describe -n kube-system deploy/kubedb-percona-xtradb
+        sleep 60
+        kubectl logs -n kube-system deploy/kubedb-percona-xtradb
+        echo "----------------"
+        kubectl get crd
+        kubectl get pxversion 5.7
 
     - name: Run e2e tests
       env:

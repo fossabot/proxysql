@@ -37,7 +37,6 @@ github.com/appscode/go/sets
 github.com/appscode/go/strings
 github.com/appscode/go/types
 github.com/appscode/go/version
-github.com/appscode/go/wait
 # github.com/appscode/osm v0.13.0
 github.com/appscode/osm/context
 # github.com/aws/aws-sdk-go v1.20.20

@@ -352,7 +352,7 @@ mysql-install:
 		--set apiserver.enableValidatingWebhook=false \
 		--set imagePullPolicy=Always \
 		$(IMAGE_PULL_SECRETS); \
-	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=5m; \
+	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=10m; \
 	helm install kubedb-mysql-catalog charts/kubedb-catalog \
 		--namespace=kube-system \
 		--set catalog.elasticsearch=false \
@@ -365,6 +365,12 @@ mysql-install:
 		--set catalog.postgres=false \
 		--set catalog.proxysql=false \
 		--set catalog.redis=false
+
+.PHONY: mysql-uninstall
+mysql-uninstall:
+	@cd ../installer; \
+	helm uninstall kubedb-mysql-catalog --namespace=kube-system || true; \
+	helm uninstall kubedb-mysql --namespace=kube-system || true
 
 PERCONA_XTRADB_TAG ?= v0.6.0-rc.0
 
@@ -380,7 +386,7 @@ percona-xtradb-install:
 		--set apiserver.enableValidatingWebhook=false \
 		--set imagePullPolicy=Always \
 		$(IMAGE_PULL_SECRETS); \
-	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=5m; \
+	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=10m; \
 	helm install kubedb-percona-xtradb-catalog charts/kubedb-catalog \
 		--namespace=kube-system \
 		--set catalog.elasticsearch=false \
@@ -394,6 +400,12 @@ percona-xtradb-install:
 		--set catalog.proxysql=false \
 		--set catalog.redis=false
 
+.PHONY: percona-xtradb-uninstall
+percona-xtradb-uninstall:
+	@cd ../installer; \
+	helm uninstall kubedb-percona-xtradb-catalog --namespace=kube-system || true; \
+	helm uninstall kubedb-percona-xtradb --namespace=kube-system || true
+
 .PHONY: install
 install:
 	@cd ../installer; \
@@ -404,7 +416,7 @@ install:
 		--set kubedb.tag=$(TAG) \
 		--set imagePullPolicy=Always \
 		$(IMAGE_PULL_SECRETS); \
-	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=5m; \
+	kubectl wait --for=condition=Ready pods -n kube-system -l app=kubedb --timeout=10m; \
 	kubectl wait --for=condition=Available apiservice -l app=kubedb --timeout=5m; \
 	helm install kubedb-catalog charts/kubedb-catalog \
 		--namespace=kube-system \
@@ -475,8 +487,9 @@ check-license:
 		$(BUILD_IMAGE)                                   \
 		ltag -t "./hack/license" --excludes "vendor contrib third_party libbuild" --check -v
 
+# TODO: uncomment verify target in ci
 .PHONY: ci
-ci: verify check-license lint build unit-tests #cover
+ci: check-license lint build unit-tests #cover # verify
 
 .PHONY: qa
 qa:
