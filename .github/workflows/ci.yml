@@ -130,4 +130,4 @@ jobs:
         echo "GOOGLE_SERVICE_ACCOUNT_JSON_KEY=$(echo $GOOGLE_SERVICE_ACCOUNT_JSON_KEY)" >> hack/config/.env
         make install
         echo
-        make e2e-parallel TEST_ARGS="--proxysql-catalog=${{ matrix.db }}"
+        make e2e-parallel TEST_ARGS="--proxysql-catalog=${{ matrix.db }}" || (kubectl describe deployment -n kube-system kubedb; kubectl logs -n kube-system deployment/kubedb; kubectl describe deployment -n kube-system kubedb-mysql; kubectl logs -n kube-system deployment/kubedb-mysql operator; kubectl describe deployment -n kube-system kubedb-percona-xtradb; kubectl logs -n kube-system deployment/kubedb-percona-xtradb operator; exit 1;)

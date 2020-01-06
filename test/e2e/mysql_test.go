@@ -224,6 +224,12 @@ var _ = Describe("MySQL Group Replication Tests", func() {
 		proxysqlFlag = false
 	})
 
+	JustAfterEach(func() {
+		if CurrentGinkgoTestDescription().Failed {
+			f.PrintDebugHelpers()
+		}
+	})
+
 	Context("ProxySQL", func() {
 		BeforeEach(func() {
 			if !framework.MySQLTest {

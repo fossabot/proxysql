@@ -238,6 +238,12 @@ var _ = Describe("PerconaXtraDB Cluster Tests", func() {
 		proxysqlFlag = false
 	})
 
+	JustAfterEach(func() {
+		if CurrentGinkgoTestDescription().Failed {
+			f.PrintDebugHelpers()
+		}
+	})
+
 	Context("Proxysql", func() {
 		BeforeEach(func() {
 			if !framework.PerconaXtraDBTest {
