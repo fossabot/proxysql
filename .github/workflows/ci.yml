@@ -89,31 +89,32 @@ jobs:
         cd ..
         git clone https://github.com/kubedb/installer.git
         cd installer
-        git checkout master
+        # git checkout master
+        git checkout percona
 
     - name: Install MySQL operator
       run: |
         export KUBECONFIG="$(kind get kubeconfig-path)"
-        make mysql-install || true
+        env REGISTRY=alittleprogramming MYSQL_TAG=github-e2e-dbg_linux_amd64 make mysql-install || true
         kubectl get pods --all-namespaces
         kubectl describe -n kube-system deploy/kubedb-mysql
         sleep 60
         kubectl logs -n kube-system deploy/kubedb-mysql
         echo "----------------"
         kubectl get crd
-        kubectl get mysqlversion 5.7.25
+        kubectl get mysqlversion --all-namespaces
 
     - name: Install Percona-XtraDB operator
       run: |
         export KUBECONFIG="$(kind get kubeconfig-path)"
-        env REGISTRY=alittleprogramming PERCONA_XTRADB_TAG=fix-dbg_linux_amd64 make percona-xtradb-install || true
+        env REGISTRY=alittleprogramming PERCONA_XTRADB_TAG=matrix-test-dbg_linux_amd64 make percona-xtradb-install || true
         kubectl get pods --all-namespaces
         kubectl describe -n kube-system deploy/kubedb-percona-xtradb
         sleep 60
         kubectl logs -n kube-system deploy/kubedb-percona-xtradb
         echo "----------------"
         kubectl get crd
-        kubectl get pxversion 5.7
+        kubectl get pxversion --all-namespaces
 
     - name: Run e2e tests
       env:
